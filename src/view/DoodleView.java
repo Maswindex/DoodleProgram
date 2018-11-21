@@ -1,6 +1,8 @@
 package view;
 
+import controller.DoodleController;
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -11,6 +13,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import model.Point;
+import model.ShapeProperties.SettingNames;
+import model.ShapeProperties.ShapeTypes;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static model.ShapeProperties.SettingNames.*;
 
 public class DoodleView extends Application
 {
@@ -31,6 +41,7 @@ public class DoodleView extends Application
     private ColorPicker strokeColorPicker = new ColorPicker();
     private Slider strokeSlider;
     private CheckBox filledCheckbox;
+    private DoodleController controller;
 
     @Override
     public void start(Stage stage)
@@ -38,6 +49,7 @@ public class DoodleView extends Application
         stage.setTitle("Doodle Program");
         stage.setScene(getPrimaryScene());
         stage.show();
+        controller.updateSettings();
     }
 
     private Scene getPrimaryScene()
@@ -77,6 +89,7 @@ public class DoodleView extends Application
 
         for (int i = 0; i < shapes.length; i++) {
             buttons[i] = getImageToggleButton(shapes[i]);
+            buttons[i].setOnAction(event -> controller.updateSettings());
         }
 
         buttons[0].setSelected(true);
@@ -93,6 +106,8 @@ public class DoodleView extends Application
 
         styleColorPicker(fillColorPicker);
         styleColorPicker(strokeColorPicker);
+        fillColorPicker.valueProperty().addListener((observable, oldV, newV) -> controller.updateSettings());
+        strokeColorPicker.valueProperty().addListener((observable, oldV, newV) -> controller.updateSettings());
 
         VBox strokeBox = new VBox();
         Label strokeLabel = new Label("Stroke: 1");
@@ -102,9 +117,14 @@ public class DoodleView extends Application
         strokeSlider.setMin(MIN_STROKE);
         strokeSlider.setMax(MAX_STROKE);
         strokeSlider.valueProperty().addListener((observable, oldV, newV) ->
-                strokeLabel.setText("Stroke: " + numToInt(newV)));
+                {
+                    strokeLabel.setText("Stroke: " + numToInt(newV));
+                    controller.updateSettings();
+                }
+        );
 
         filledCheckbox = new CheckBox("Filled");
+        filledCheckbox.selectedProperty().addListener((observable, oldValue, newValue) -> controller.updateSettings());
 
         settingsPanel.getChildren().addAll(new Label("Fill:"), fillColorPicker,
                 new Label("Stroke:"), strokeColorPicker, strokeBox, filledCheckbox);
@@ -134,7 +154,14 @@ public class DoodleView extends Application
         for (int i = 0; i < edits.length; i++) {
             buttons[i] = getImageButton(edits[i]);
         }
+        buttons[0].setOnAction(event -> controller.undo());
+        buttons[1].setOnAction(event -> controller.redo());
+
         editPanel.getChildren().addAll(buttons);
+        for (Node edit : editPanel.getChildren())
+        {
+            System.out.println(edit.getId());
+        }
 
         return editPanel;
     }
@@ -150,6 +177,7 @@ public class DoodleView extends Application
     private ToggleButton getImageToggleButton(String text)
     {
         ToggleButton result = new ToggleButton();
+        result.setUserData(text);
         result.setGraphic(getButtonIcon(text));
         return result;
     }
@@ -166,6 +194,8 @@ public class DoodleView extends Application
         VBox box = new VBox();
 
         canvas = new Canvas();
+        controller = new DoodleController(canvas.getGraphicsContext2D(), this);
+        addCanvasEventHandlers();
         canvas.setStyle("-fx-background-color: black");
         canvas.widthProperty().bind(box.widthProperty());
         canvas.heightProperty().bind(box.heightProperty());
@@ -173,6 +203,21 @@ public class DoodleView extends Application
         box.getChildren().add(canvas);
 
         return box;
+    }
+
+    private void addCanvasEventHandlers()
+    {
+        canvas.setOnMousePressed(event ->
+                controller.recordAnchor(new Point((int)event.getX(), (int)event.getY()))
+        );
+
+        canvas.setOnMouseDragged(event ->
+                controller.recordEnd(new Point((int)event.getX(), (int)event.getY()))
+        );
+
+        canvas.setOnMouseReleased(event ->
+                controller.addNewShape()
+        );
     }
 
     private MenuBar buildMenu()
@@ -208,7 +253,7 @@ public class DoodleView extends Application
     {
         Menu shapesMenu = new Menu("Shape Tools");
         MenuItem[] shapes = {new MenuItem("Line"), new MenuItem("Oval"),
-                             new MenuItem("Rectangle"), new MenuItem("Squiggle")};
+                new MenuItem("Rectangle"), new MenuItem("Squiggle")};
         shapesMenu.getItems().addAll(shapes);
         draw.getItems().add(shapesMenu);
 
@@ -220,5 +265,21 @@ public class DoodleView extends Application
     {
         MenuItem[] items = {new MenuItem("About")};
         about.getItems().addAll(items);
+    }
+
+    public Map<SettingNames, Object> getSettings()
+    {
+        Map<SettingNames, Object> settings = new HashMap<>();
+        fillSettingsMap(settings);
+        return settings;
+    }
+
+    private void fillSettingsMap(Map<SettingNames, Object> settings)
+    {
+        settings.put(STROKECOLOR, strokeColorPicker.getValue());
+        settings.put(FILLCOLOR, fillColorPicker.getValue());
+        settings.put(STROKEWIDTH, strokeSlider.getValue());
+        settings.put(FILLED, filledCheckbox.isSelected());
+        settings.put(SHAPE, ShapeTypes.valueOf(shapeGroup.getSelectedToggle().getUserData().toString().toUpperCase()));
     }
 }
