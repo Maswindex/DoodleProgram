@@ -2,6 +2,8 @@ package view;
 
 import controller.DoodleController;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -55,9 +57,9 @@ public class DoodleView extends Application
     private Scene getPrimaryScene()
     {
         BorderPane mainPanel = new BorderPane();
-
         VBox top = new VBox();
-        top.getChildren().addAll(buildMenu(), getToolbar());
+        Node toolbar = getToolbar();
+        top.getChildren().addAll(buildMenu(), toolbar);
 
         //set the primary regions
         mainPanel.setTop(top);
@@ -154,6 +156,7 @@ public class DoodleView extends Application
         for (int i = 0; i < edits.length; i++) {
             buttons[i] = getImageButton(edits[i]);
         }
+
         buttons[0].setOnAction(event -> controller.undo());
         buttons[1].setOnAction(event -> controller.redo());
 
@@ -240,30 +243,48 @@ public class DoodleView extends Application
     private void fileMenu(Menu file)
     {
         MenuItem[] items = {new MenuItem("Quit")};
+        items[0].setOnAction(event -> System.exit(0));
         file.getItems().addAll(items);
     }
 
     private void editMenu(Menu edit)
     {
         MenuItem[] items = {new MenuItem("Undo"), new MenuItem("Redo")};
+        items[0].setOnAction(event -> controller.undo());
+        items[1].setOnAction(event -> controller.redo());
         edit.getItems().addAll(items);
     }
 
     private void drawMenu(Menu draw)
     {
+        String[] shapeTypes = {"Line", "Oval", "Rectangle", "Squiggle"};
         Menu shapesMenu = new Menu("Shape Tools");
-        MenuItem[] shapes = {new MenuItem("Line"), new MenuItem("Oval"),
-                new MenuItem("Rectangle"), new MenuItem("Squiggle")};
+        MenuItem[] shapes = new MenuItem[4];
+
+        for (int i = 0; i < shapeTypes.length; i++)
+        {
+            shapes[i] = new MenuItem(shapeTypes[i]);
+            for (Toggle button : shapeGroup.getToggles())
+            {
+                if (button.getUserData().equals(shapeTypes[i]))
+                {
+                    shapes[i].setOnAction(event->((ToggleButton)button).fire());
+                }
+            }
+        }
+        
         shapesMenu.getItems().addAll(shapes);
         draw.getItems().add(shapesMenu);
 
         MenuItem clear = new MenuItem("Clear Shapes");
+        clear.setOnAction(event->controller.clear());
         draw.getItems().add(clear);
     }
 
     private void help(Menu about)
     {
         MenuItem[] items = {new MenuItem("About")};
+        items[0].setOnAction(event->showAlertWithHeaderText());
         about.getItems().addAll(items);
     }
 
@@ -281,5 +302,13 @@ public class DoodleView extends Application
         settings.put(STROKEWIDTH, strokeSlider.getValue());
         settings.put(FILLED, filledCheckbox.isSelected());
         settings.put(SHAPE, ShapeTypes.valueOf(shapeGroup.getSelectedToggle().getUserData().toString().toUpperCase()));
+    }
+
+    private void showAlertWithHeaderText() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Doodle Program");
+        alert.setHeaderText("Version 1.0");
+        alert.setContentText("Authors: Zachary Rosenlund and Mason Hernandez");
+        alert.showAndWait();
     }
 }

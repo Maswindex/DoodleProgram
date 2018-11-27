@@ -34,8 +34,8 @@ public class SketchPad
         applyDimension(shape.getDimensions());
         correctFor2D();
 
-        strokeRECTANGLE(shape, pad);
         pad.fillRect(x, y, Math.abs(width), Math.abs(height));
+        strokeRECTANGLE(shape, pad);
     }
 
     public static void strokeOVAL(AbstractShape shape, GraphicsContext pad)
@@ -51,8 +51,8 @@ public class SketchPad
         applyDimension(shape.getDimensions());
         correctFor2D();
 
-        strokeOVAL(shape, pad);
         pad.fillOval(x, y, Math.abs(width), Math.abs(height));
+        strokeOVAL(shape, pad);
     }
 
     public static void strokeSQUIGGLE(AbstractShape shape, GraphicsContext pad)

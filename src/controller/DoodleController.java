@@ -7,6 +7,7 @@ import model.ShapeProperties.ShapeDimensions;
 import model.ShapeProperties.ShapeTypes;
 import model.ShapeVault;
 import model.Shapes.*;
+import obsverver.IObserver;
 import view.DoodleView;
 import view.SketchFacade;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 import static model.ShapeProperties.SettingNames.*;
 import static model.ShapeProperties.ShapeTypes.*;
 
-public class DoodleController
+public class DoodleController implements IObserver
 {
     public static final int WIN_WIDTH = 1000;
     public static final int WIN_HEIGHT = 600;
@@ -35,6 +36,7 @@ public class DoodleController
         this.drawPane = graphicsContext2D;
         this.doodleView = doodleView;
         shapes = new ShapeVault();
+        shapes.addObserver(this);
         shapeType = ShapeTypes.LINE;
         anchor = new Point(0,0);
     }
@@ -47,12 +49,12 @@ public class DoodleController
 
     public void undo()
     {
-
+        shapes.undo();
     }
 
     public void redo()
     {
-
+        shapes.redo();
     }
 
     public void recordAnchor(Point point)
@@ -84,18 +86,11 @@ public class DoodleController
     }
 
 
-    private void drawAllShapes()
-    {
-        drawPane.clearRect(0,0, WIN_WIDTH, WIN_HEIGHT);
-        SketchFacade.drawAll(shapes.getShapes(), drawPane);
-    }
-
     public void addNewShape()
     {
         shapes.addShape(currentShape);
         xCoordinates.clear();
         yCoordinates.clear();
-        drawAllShapes();
     }
 
     private AbstractShape getCurrentShape(Point end)
@@ -115,5 +110,22 @@ public class DoodleController
             default:
                 return new Line(dimensions, settings);
         }
+    }
+
+    @Override
+    public void update(obsverver.Observable observable, Object... args)
+    {
+        drawAllShapes();
+    }
+
+    private void drawAllShapes()
+    {
+        drawPane.clearRect(0,0, WIN_WIDTH, WIN_HEIGHT);
+        SketchFacade.drawAll(shapes.getShapes(), drawPane);
+    }
+
+    public void clear()
+    {
+        shapes.clear();
     }
 }
