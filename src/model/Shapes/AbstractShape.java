@@ -57,7 +57,7 @@ public abstract class AbstractShape
     public String toString()
     {
         return "AbstractShape{" +
-                ", fillColor=" + fillColor +
+                "fillColor=" + fillColor +
                 ", strokeColor=" + strokeColor +
                 ", strokeWidth=" + strokeWidth +
                 ", filled=" + filled +

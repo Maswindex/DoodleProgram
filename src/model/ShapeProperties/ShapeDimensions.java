@@ -14,18 +14,13 @@ public class ShapeDimensions
 
     private void renderCoordinates(Point anchor, Point end)
     {
-        double x = anchor.getX(),
-               y = anchor.getY(),
-                width = x - end.getX(),
-                height = y - end.getY();
-
         this.anchor = new Point(
-          x + (width < 0 ? 0: width),
-          y + (height < 0 ? 0: height)
+                anchor.getX(),
+                anchor.getY()
         );
 
-        this.width = Math.abs(width);
-        this.height = Math.abs(height);
+        this.width = end.getX() - anchor.getX();
+        this.height = end.getY() - anchor.getY();
     }
 
     public double getHeight()

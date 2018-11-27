@@ -1,5 +1,6 @@
 package model.Shapes;
 
+import model.Point;
 import model.ShapeProperties.SettingNames;
 import model.ShapeProperties.ShapeDimensions;
 
@@ -37,7 +38,11 @@ public class Squiggle extends AbstractShape
     @Override
     public ShapeDimensions getDimensions()
     {
-        return null;
+        return new ShapeDimensions(
+                new Point(xCoordinates[0], yCoordinates[0]),
+                new Point(xCoordinates[xCoordinates.length-1],
+                          yCoordinates[yCoordinates.length-1]
+                ));
     }
 
     @Override
@@ -45,7 +50,7 @@ public class Squiggle extends AbstractShape
     {
         return "Squiggle{" +
                 "xCoordinates=" + Arrays.toString(xCoordinates) +
-                ", yCoordinates=" + Arrays.toString(yCoordinates) +
+                ", yCoordinates=" + Arrays.toString(yCoordinates) + ", " +
                 super.toString() +
                 '}';
     }
