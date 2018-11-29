@@ -1,12 +1,22 @@
+/*
+ *      author: Mason Hernandez
+ *      author: Zachary Rosenlund
+ *     version: 1.0
+ *     created: 11/15/18
+ * last edited: 11/29/18
+ *
+ * This file holds all the controller methods
+ */
+
 package controller;
 
 import javafx.scene.canvas.GraphicsContext;
 import model.Point;
-import model.ShapeProperties.SettingNames;
-import model.ShapeProperties.ShapeDimensions;
-import model.ShapeProperties.ShapeTypes;
+import model.shapeproperties.SettingNames;
+import model.shapeproperties.ShapeDimensions;
+import model.shapeproperties.ShapeTypes;
 import model.ShapeVault;
-import model.Shapes.*;
+import model.shapes.*;
 import obsverver.IObserver;
 import view.DoodleView;
 import view.SketchFacade;
@@ -14,9 +24,16 @@ import view.SketchFacade;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static model.ShapeProperties.SettingNames.*;
-import static model.ShapeProperties.ShapeTypes.*;
+import static model.shapeproperties.SettingNames.*;
+import static model.shapeproperties.ShapeTypes.*;
 
+/**
+ * This class is the controller in the MVC structure
+ *
+ * @author Zachary Rosenlund
+ * @author Mason Hernandez
+ * @version 1.0
+ */
 public class DoodleController implements IObserver
 {
     public static final int WIN_WIDTH = 1000;
@@ -31,6 +48,12 @@ public class DoodleController implements IObserver
     private Map<SettingNames, Object> settings;
     private AbstractShape currentShape;
 
+    /**
+     * Controller constructor
+     *
+     * @param graphicsContext2D the drawable pane object
+     * @param doodleView the program view
+     */
     public DoodleController(GraphicsContext graphicsContext2D, DoodleView doodleView)
     {
         this.drawPane = graphicsContext2D;
@@ -41,27 +64,46 @@ public class DoodleController implements IObserver
         anchor = new Point(0,0);
     }
 
+    /**
+     * updates the settings from the toolbar
+     */
     public void updateSettings()
     {
         settings = doodleView.getSettings();
         shapeType = (ShapeTypes)settings.get(SHAPE);
     }
 
+    /**
+     * undo the last shape drawn
+     */
     public void undo()
     {
         shapes.undo();
     }
 
+    /**
+     * redo the last shape removed
+     */
     public void redo()
     {
         shapes.redo();
     }
 
+    /**
+     * sets the anchor point position
+     *
+     * @param point anchor point on the graphics context
+     */
     public void recordAnchor(Point point)
     {
         anchor = new Point(point.getX(), point.getY());
     }
 
+    /**
+     * sets the end point position
+     *
+     * @param end end point on the graphics context
+     */
     public void recordEnd(Point end)
     {
         if (shapeType.equals(SQUIGGLE))
@@ -86,6 +128,9 @@ public class DoodleController implements IObserver
     }
 
 
+    /**
+     * adds a new shape to the drawPane
+     */
     public void addNewShape()
     {
         shapes.addShape(currentShape);
@@ -124,8 +169,27 @@ public class DoodleController implements IObserver
         SketchFacade.drawAll(shapes.getShapes(), drawPane);
     }
 
+    /**
+     * clears the drawPane of all shapes
+     */
     public void clear()
     {
         shapes.clear();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "DoodleController{" +
+                "drawPane=" + drawPane +
+                ", doodleView=" + doodleView +
+                ", shapeType=" + shapeType +
+                ", anchor=" + anchor +
+                ", shapes=" + shapes +
+                ", xCoordinates=" + xCoordinates +
+                ", yCoordinates=" + yCoordinates +
+                ", settings=" + settings +
+                ", currentShape=" + currentShape +
+                '}';
     }
 }

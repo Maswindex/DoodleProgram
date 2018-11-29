@@ -1,17 +1,41 @@
-package model.Shapes;
+/*
+ *      author: Mason Hernandez
+ *      author: Zachary Rosenlund
+ *     version: 1.0
+ *     created: 11/15/18
+ * last edited: 11/29/18
+ *
+ * This file holds the squiggle shape object
+ */
+
+package model.shapes;
 
 import model.Point;
-import model.ShapeProperties.SettingNames;
-import model.ShapeProperties.ShapeDimensions;
+import model.shapeproperties.SettingNames;
+import model.shapeproperties.ShapeDimensions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * defines the squiggle shape object
+ *
+ * @author Zachary Rosenlund
+ * @author Mason Hernandez
+ * @version 1.0
+ */
 public class Squiggle extends AbstractShape
 {
     private double[] xCoordinates, yCoordinates;
 
+    /**
+     * Squiggle constructor
+     *
+     * @param xCoordinates graphicscontext point
+     * @param yCoordinates graphicscontext point
+     * @param settings settings from toolbar
+     */
     public Squiggle(ArrayList<Double> xCoordinates, ArrayList<Double> yCoordinates,
                     Map<SettingNames, Object> settings)
     {
@@ -25,11 +49,17 @@ public class Squiggle extends AbstractShape
         initializeSettings(settings);
     }
 
+    /**
+     * @return xCoordinates
+     */
     public double[] getxCoordinates()
     {
         return xCoordinates;
     }
 
+    /**
+     * @return yCoordinates
+     */
     public double[] getyCoordinates()
     {
         return yCoordinates;

@@ -1,19 +1,44 @@
+/*
+ *      author: Mason Hernandez
+ *      author: Zachary Rosenlund
+ *     version: 1.0
+ *     created: 11/15/18
+ * last edited: 11/29/18
+ *
+ * This file holds all the facade draw methods
+ */
+
 package view;
 
 import javafx.scene.canvas.GraphicsContext;
-import model.Shapes.AbstractShape;
-
+import model.shapes.AbstractShape;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * This class uses the facade design pattern to draw shapes
+ *
+ * @author Zachary Rosenlund
+ * @author Mason Hernandez
+ * @version 1.0
+ */
 public class SketchFacade
 {
+    /**
+     * draws a shape to the graphics context
+     *
+     * @param shape the shape being drawing
+     * @param pad graphics context
+     */
     public static void draw(AbstractShape shape, GraphicsContext pad)
     {
         setDrawingProperties(shape, pad);
         Method drawingMethod = getDrawingMethod(shape);
-        invokeDrawingMethod(drawingMethod, shape, pad);
+        if (drawingMethod != null)
+        {
+            invokeDrawingMethod(drawingMethod, shape, pad);
+        }
     }
 
     private static void invokeDrawingMethod(Method drawingMethod, AbstractShape shape, GraphicsContext pad)
@@ -45,6 +70,12 @@ public class SketchFacade
         }
     }
 
+    /**
+     * draws all shapes from the stack
+     *
+     * @param shapes drawable objects
+     * @param pad graphics context
+     */
     public static void drawAll(List<AbstractShape> shapes, GraphicsContext pad)
     {
         for (AbstractShape shape : shapes)

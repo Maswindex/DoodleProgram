@@ -1,9 +1,16 @@
+/*
+ *      author: Mason Hernandez
+ *      author: Zachary Rosenlund
+ *     version: 1.0
+ *     created: 11/15/18
+ * last edited: 11/29/18
+ *
+ * This file holds all the view methods
+ */
 package view;
 
 import controller.DoodleController;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,14 +23,21 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import model.Point;
-import model.ShapeProperties.SettingNames;
-import model.ShapeProperties.ShapeTypes;
+import model.shapeproperties.SettingNames;
+import model.shapeproperties.ShapeTypes;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static model.ShapeProperties.SettingNames.*;
+import static model.shapeproperties.SettingNames.*;
 
+/**
+ * This class creates the view for the doodle application
+ *
+ * @author Zachary Rosenlund
+ * @author Mason Hernandez
+ * @version 1.0
+ */
 public class DoodleView extends Application
 {
     public static final int WIN_WIDTH = 1000;
@@ -276,7 +290,7 @@ public class DoodleView extends Application
         shapesMenu.getItems().addAll(shapes);
         draw.getItems().add(shapesMenu);
 
-        MenuItem clear = new MenuItem("Clear Shapes");
+        MenuItem clear = new MenuItem("Clear shapes");
         clear.setOnAction(event->controller.clear());
         draw.getItems().add(clear);
     }
@@ -288,6 +302,11 @@ public class DoodleView extends Application
         about.getItems().addAll(items);
     }
 
+    /**
+     * Returns the settings map determined by the toolbar
+     *
+     * @return Map object for settings
+     */
     public Map<SettingNames, Object> getSettings()
     {
         Map<SettingNames, Object> settings = new HashMap<>();
@@ -310,5 +329,19 @@ public class DoodleView extends Application
         alert.setHeaderText("Version 1.0");
         alert.setContentText("Authors: Zachary Rosenlund and Mason Hernandez");
         alert.showAndWait();
+    }
+
+    @Override
+    public String toString()
+    {
+        return "DoodleView{" +
+                "canvas=" + canvas +
+                ", shapeGroup=" + shapeGroup +
+                ", fillColorPicker=" + fillColorPicker +
+                ", strokeColorPicker=" + strokeColorPicker +
+                ", strokeSlider=" + strokeSlider +
+                ", filledCheckbox=" + filledCheckbox +
+                ", controller=" + controller +
+                '}';
     }
 }
